@@ -8,6 +8,7 @@ type Admin struct {
 	ID       uint `gorm:"primarykey"`
 	Username string
 	Password string
+	Pegawai  []Pegawai `gorm:"foreignKey:AdminId"`
 }
 
 type AdminModel struct {
