@@ -123,3 +123,12 @@ func (bc *BarangController) FindBarang(id uint) ([]models.ResponseBarang, error)
 
 	return responseBarang, nil
 }
+
+func (bc *BarangController) GetBarang(id uint) (bool, error) {
+	_, err := bc.model.GetBarang(id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

@@ -80,3 +80,11 @@ func (bm *BarangModel) FindBarang(pegawaiID uint) (*[]Barang, error) {
 	}
 	return barangs, nil
 }
+
+func (bm *BarangModel) GetBarang(barangID uint) (*Barang, error) {
+	barang := &Barang{}
+	if err := bm.DB.Where("ID = ?", barangID).First(barang).Error; err != nil {
+		return nil, err
+	}
+	return barang, nil
+}

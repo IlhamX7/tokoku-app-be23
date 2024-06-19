@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"tokoku-app-be23/configs"
 	"tokoku-app-be23/internal/controllers"
 	"tokoku-app-be23/internal/models"
@@ -29,6 +30,9 @@ func TestConnect() (*gorm.DB, error) {
 	if err := connection.AutoMigrate(&models.Barang{}); err != nil {
 		return nil, err
 	}
+	if err := connection.AutoMigrate(&models.NotaTransaksi{}); err != nil {
+		return nil, err
+	}
 
 	if err := connection.First(&models.Admin{}).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		admin := models.Admin{Username: "admin", Password: "admin"}
@@ -46,6 +50,23 @@ func TestConnect() (*gorm.DB, error) {
 	return connection, nil
 }
 
+func InputUint(prompt string) (uint, error) {
+	var input string
+	fmt.Print(prompt + ": ")
+	_, err := fmt.Scanln(&input)
+	if err != nil {
+		return 0, err
+	}
+	value, err := strconv.Atoi(input)
+	if err != nil {
+		return 0, err
+	}
+	if value < 0 {
+		return 0, fmt.Errorf("negative value entered: %d", value)
+	}
+	return uint(value), nil
+}
+
 func App() {
 	connection, _ := TestConnect()
 
@@ -60,6 +81,9 @@ func App() {
 
 	bm := models.NewBarangModel(connection)
 	bc := controllers.NewBarangController(bm)
+
+	ntm := models.NewNotaTransaksiModel(connection)
+	ntc := controllers.NewNotaTransaksiController(ntm)
 
 	var inputMenu int
 	for inputMenu != 9 {
@@ -153,6 +177,19 @@ func App() {
 						return
 					}
 					fmt.Println("berhasil menghapus barang")
+				} else if inputMenu2 == 7 {
+					var id uint
+					fmt.Print("Masukkan id nota transaksi ")
+					fmt.Scanln(&id)
+					_, err := ntc.DeleteNotaTransaksi(id)
+					if err != nil {
+						fmt.Println("error ketika menghapus nota transaksi")
+						return
+					}
+					fmt.Println("berhasil menghapus nota transaksi")
+				} else {
+					fmt.Println("maaf menu yang anda pilih tidak ada, silahkan pilih lagi")
+					continue
 				}
 			}
 		} else if inputMenu == 2 {
@@ -222,6 +259,23 @@ func App() {
 						return
 					}
 					fmt.Println("berhasil menambahkan customer")
+				} else if inputMenu2 == 6 {
+					customerId, err := InputUint("Silahkan pilih id customer ")
+					if err != nil {
+						fmt.Println("error ketika memilih id customer")
+						return
+					}
+					_, err = cc.GetCustomer(customerId)
+					if err != nil {
+						fmt.Println("error ketika memilih id customer")
+						return
+					}
+					_, err = ntc.CreateNotaTransaksi(data.ID, customerId)
+					if err != nil {
+						fmt.Println("error ketika membuat nota transaksi")
+						return
+					}
+					fmt.Println("berhasil membuat nota transaksi")
 				}
 			}
 		} else if inputMenu == 9 {
