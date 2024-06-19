@@ -12,6 +12,8 @@ type Pegawai struct {
 	Password string
 	Email    string
 	AdminId  uint
+	Customer []Customer `gorm:"foreignKey:PegawaiId"`
+	Barang   []Barang   `gorm:"foreignKey:PegawaiId"`
 }
 
 type ResponsePegawai struct {
