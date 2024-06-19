@@ -75,3 +75,12 @@ func (cc *CustomerController) FindCustomer(id uint) ([]models.ResponseCustomer, 
 
 	return responseCustomer, nil
 }
+
+func (cc *CustomerController) GetCustomer(id uint) (bool, error) {
+	_, err := cc.model.GetCustomer(id)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

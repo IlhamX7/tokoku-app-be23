@@ -8,12 +8,13 @@ import (
 
 type Pegawai struct {
 	gorm.Model
-	Username string
-	Password string
-	Email    string
-	AdminId  uint
-	Customer []Customer `gorm:"foreignKey:PegawaiId"`
-	Barang   []Barang   `gorm:"foreignKey:PegawaiId"`
+	Username      string
+	Password      string
+	Email         string
+	AdminId       uint
+	Customer      []Customer      `gorm:"foreignKey:PegawaiId"`
+	Barang        []Barang        `gorm:"foreignKey:PegawaiId"`
+	NotaTransaksi []NotaTransaksi `gorm:"foreignKey:PegawaiId"`
 }
 
 type ResponsePegawai struct {

@@ -7,15 +7,16 @@ import (
 )
 
 type Customer struct {
-	ID           uint `gorm:"primaryKey"`
-	PegawaiId    uint
-	NamaCustomer string
-	Address      string
-	Phone        string
-	Email        string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	ID            uint `gorm:"primaryKey"`
+	PegawaiId     uint
+	NamaCustomer  string
+	Address       string
+	Phone         string
+	Email         string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     gorm.DeletedAt  `gorm:"index"`
+	NotaTransaksi []NotaTransaksi `gorm:"foreignKey:CustomerId"`
 }
 
 type ResponseCustomer struct {
@@ -79,4 +80,12 @@ func (cm *CustomerModel) FindCustomer(pegawaiID uint) (*[]Customer, error) {
 		return nil, err
 	}
 	return customers, nil
+}
+
+func (cm *CustomerModel) GetCustomer(customerID uint) (*Customer, error) {
+	customer := &Customer{}
+	if err := cm.DB.Where("ID = ?", customerID).First(customer).Error; err != nil {
+		return nil, err
+	}
+	return customer, nil
 }
