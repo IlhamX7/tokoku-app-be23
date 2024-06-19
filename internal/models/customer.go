@@ -7,16 +7,13 @@ import (
 )
 
 type Customer struct {
-	ID            uint `gorm:"primaryKey"`
-	PegawaiId     uint
-	NamaCustomer  string
-	Address       string
-	Phone         string
-	Email         string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     gorm.DeletedAt  `gorm:"index"`
-	NotaTransaksi []NotaTransaksi `gorm:"foreignKey:CustomerId"`
+	gorm.Model
+	PegawaiId    uint
+	NamaCustomer string
+	Address      string
+	Phone        string
+	Email        string
+  NotaTransaksi []NotaTransaksi `gorm:"foreignKey:CustomerId"`
 }
 
 type ResponseCustomer struct {
