@@ -7,16 +7,13 @@ import (
 )
 
 type Barang struct {
-	ID         uint `gorm:"primaryKey"`
+	gorm.Model
 	PegawaiId  uint
 	KodeBarang string
 	NamaBarang string
 	Stok       int
 	Harga      int
 	Keterangan string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	DeletedAt  gorm.DeletedAt `gorm:"index"`
 }
 
 type ResponseBarang struct {

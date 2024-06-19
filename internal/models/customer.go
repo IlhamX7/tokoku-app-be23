@@ -7,15 +7,12 @@ import (
 )
 
 type Customer struct {
-	ID           uint `gorm:"primaryKey"`
+	gorm.Model
 	PegawaiId    uint
 	NamaCustomer string
 	Address      string
 	Phone        string
 	Email        string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }
 
 type ResponseCustomer struct {
