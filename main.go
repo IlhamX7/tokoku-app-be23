@@ -23,6 +23,13 @@ func TestConnect() (*gorm.DB, error) {
 	if err := connection.AutoMigrate(&models.Pegawai{}); err != nil {
 		return nil, err
 	}
+	if err := connection.AutoMigrate(&models.Customer{}); err != nil {
+		return nil, err
+	}
+	if err := connection.AutoMigrate(&models.Barang{}); err != nil {
+		return nil, err
+	}
+
 	if err := connection.First(&models.Admin{}).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		admin := models.Admin{Username: "admin", Password: "admin"}
 
@@ -47,6 +54,12 @@ func App() {
 
 	pu := models.NewPegawaiModel(connection)
 	pc := controllers.NewPegawaiController(pu)
+
+	cm := models.NewCustomerModel(connection)
+	cc := controllers.NewCustomerController(cm)
+
+	bm := models.NewBarangModel(connection)
+	bc := controllers.NewBarangController(bm)
 
 	var inputMenu int
 	for inputMenu != 9 {
@@ -120,6 +133,26 @@ func App() {
 					for i, pegawai := range data {
 						fmt.Printf("Pegawai %d:\nId: %d\nUsername: %s\nEmail: %s\n", i+1, pegawai.ID, pegawai.Username, pegawai.Email)
 					}
+				} else if inputMenu2 == 5 {
+					var id uint
+					fmt.Print("Masukkan id customer ")
+					fmt.Scanln(&id)
+					_, err := cc.DeleteCustomer(id)
+					if err != nil {
+						fmt.Println("error ketika menghapus customer")
+						return
+					}
+					fmt.Println("berhasil menghapus customer")
+				} else if inputMenu2 == 6 {
+					var id uint
+					fmt.Print("Masukkan id barang ")
+					fmt.Scanln(&id)
+					_, err := bc.DeleteBarang(id)
+					if err != nil {
+						fmt.Println("error ketika menghapus barang")
+						return
+					}
+					fmt.Println("berhasil menghapus barang")
 				}
 			}
 		} else if inputMenu == 2 {
@@ -145,8 +178,51 @@ func App() {
 				fmt.Scanln(&inputMenu2)
 				if inputMenu2 == 9 {
 					isLogin = false
+				} else if inputMenu2 == 1 {
+					_, err := bc.AddBarang(data.ID)
+					if err != nil {
+						fmt.Println("error ketika menambahkan barang")
+						return
+					}
+					fmt.Println("berhasil menambahkan barang")
+				} else if inputMenu2 == 2 {
+					var id uint
+					fmt.Print("Masukkan id barang ")
+					fmt.Scanln(&id)
+					_, err := bc.UpdateBarang(id)
+					if err != nil {
+						fmt.Println("error ketika mengubah barang")
+						return
+					}
+					fmt.Println("berhasil mengubah barang")
+				} else if inputMenu2 == 3 {
+					var id uint
+					fmt.Print("Masukkan id barang ")
+					fmt.Scanln(&id)
+					_, err := bc.UpdateBarang(id)
+					if err != nil {
+						fmt.Println("error ketika mengubah barang")
+						return
+					}
+					fmt.Println("berhasil mengubah stok barang")
+				} else if inputMenu2 == 4 {
+					data, err := bc.FindBarang(data.ID)
+					if err != nil {
+						fmt.Println("error ketika menampilkan daftar barang")
+						return
+					}
+					fmt.Println("berhasil menampilkan daftar barang")
+					for i, barang := range data {
+						fmt.Printf("Barang %d:\nId: %d\nKode: %s\nNama: %s\nHarga: %d\n\n", i+1, barang.ID, barang.KodeBarang, barang.NamaBarang, barang.Harga)
+					}
+				} else if inputMenu2 == 5 {
+					_, err := cc.AddCustomer(data.ID)
+					if err != nil {
+						fmt.Println("error ketika menambahkan customer")
+						return
+					}
+					fmt.Println("berhasil menambahkan customer")
 				}
-				// lanjutkan
 			}
 		} else if inputMenu == 9 {
 			break
