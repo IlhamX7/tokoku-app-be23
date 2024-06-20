@@ -33,6 +33,9 @@ func TestConnect() (*gorm.DB, error) {
 	if err := connection.AutoMigrate(&models.NotaTransaksi{}); err != nil {
 		return nil, err
 	}
+	if err := connection.AutoMigrate(&models.DetailTransaksi{}); err != nil {
+		return nil, err
+	}
 
 	if err := connection.First(&models.Admin{}).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		admin := models.Admin{Username: "admin", Password: "admin"}
@@ -84,6 +87,9 @@ func App() {
 
 	ntm := models.NewNotaTransaksiModel(connection)
 	ntc := controllers.NewNotaTransaksiController(ntm)
+
+	dtm := models.NewDetailTransaksiModel(connection)
+	dtc := controllers.NewDetailTransaksiController(dtm)
 
 	var inputMenu int
 	for inputMenu != 9 {
@@ -210,6 +216,8 @@ func App() {
 				fmt.Println("4. Tampilkan daftar barang")
 				fmt.Println("5. Tambah customer baru")
 				fmt.Println("6. Create nota transaksi untuk customer")
+				fmt.Println("7. Tambah detail transaksi")
+				fmt.Println("8. Tampilkan detail transaksi")
 				fmt.Println("9. Keluar")
 				fmt.Print("Masukkan input: ")
 				fmt.Scanln(&inputMenu2)
@@ -276,6 +284,36 @@ func App() {
 						return
 					}
 					fmt.Println("berhasil membuat nota transaksi")
+				} else if inputMenu2 == 7 {
+					notaTransaksiId, err := InputUint("Silahkan pilih id nota transaksi ")
+					if err != nil {
+						fmt.Println("error ketika memilih id nota transaksi")
+						return
+					}
+					_, err = dtc.AddDetailTransaksi(notaTransaksiId)
+					if err != nil {
+						fmt.Println("error ketika menambahkan detail transaksi")
+						return
+					}
+					fmt.Println("berhasil menambahkan detail transaksi")
+				} else if inputMenu2 == 8 {
+					notaTransaksiId, err := InputUint("Silahkan pilih id nota transaksi ")
+					if err != nil {
+						fmt.Println("error ketika memilih id nota transaksi")
+						return
+					}
+					data, err := dtc.FindDetailTransaksi(notaTransaksiId)
+					if err != nil {
+						fmt.Println("error ketika menampilkan detail transaksi")
+						return
+					}
+					fmt.Println("berhasil menampilkan detail transaksi")
+					for i, detail := range data {
+						fmt.Printf("Detail Transaksi %d:\nId: %d\nNota Transaksi ID: %d\nBarang ID: %d\nJumlah Barang: %d\nHarga Barang: %d\n\n", i+1, detail.ID, detail.NotaTransaksiID, detail.BarangID, detail.JumlahBarang, detail.HargaBarang)
+					}
+				} else {
+					fmt.Println("maaf menu yang anda pilih tidak ada, silahkan pilih lagi")
+					continue
 				}
 			}
 		} else if inputMenu == 9 {
