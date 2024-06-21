@@ -54,25 +54,14 @@ func InputInteger(prompt string) (int, error) {
 	return value, nil
 }
 
-func (dtc *DetailTransaksiController) AddDetailTransaksi(notaTransaksiID uint) (bool, error) {
+func (dtc *DetailTransaksiController) AddDetailTransaksi(notaTransaksiID uint, barangID uint, jumlahBarang int, hargaBarang int) (bool, error) {
 	var newDetail models.DetailTransaksi
 	var err error
 
 	newDetail.NotaTransaksiID = notaTransaksiID
-	newDetail.BarangID, err = InputUint("Masukkan ID barang")
-	if err != nil {
-		return false, err
-	}
-
-	newDetail.JumlahBarang, err = InputInt("Masukkan jumlah barang")
-	if err != nil {
-		return false, err
-	}
-
-	newDetail.HargaBarang, err = InputInt("Masukkan harga barang")
-	if err != nil {
-		return false, err
-	}
+	newDetail.BarangID = barangID
+	newDetail.JumlahBarang = jumlahBarang
+	newDetail.HargaBarang = hargaBarang
 
 	_, err = dtc.model.AddDetailTransaksi(newDetail)
 	if err != nil {
@@ -91,22 +80,10 @@ func (dtc *DetailTransaksiController) DeleteDetailTransaksi(id uint) (bool, erro
 	return true, nil
 }
 
-func (dtc *DetailTransaksiController) FindDetailTransaksi(notaTransaksiID uint) ([]models.ResponseDetailTransaksi, error) {
+func (dtc *DetailTransaksiController) FindDetailTransaksi(notaTransaksiID uint) ([]models.DetailTransaksi, error) {
 	data, err := dtc.model.FindDetailTransaksi(notaTransaksiID)
 	if err != nil {
 		return nil, err
 	}
-
-	responseDetail := make([]models.ResponseDetailTransaksi, len(*data))
-	for i, val := range *data {
-		responseDetail[i] = models.ResponseDetailTransaksi{
-			ID:              val.ID,
-			NotaTransaksiID: val.NotaTransaksiID,
-			BarangID:        val.BarangID,
-			JumlahBarang:    val.JumlahBarang,
-			HargaBarang:     val.HargaBarang,
-		}
-	}
-
-	return responseDetail, nil
+	return data, nil
 }

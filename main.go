@@ -70,6 +70,20 @@ func InputUint(prompt string) (uint, error) {
 	return uint(value), nil
 }
 
+func InputInt(prompt string) (int, error) {
+	var input string
+	fmt.Print(prompt + ": ")
+	_, err := fmt.Scanln(&input)
+	if err != nil {
+		return 0, err
+	}
+	value, err := strconv.Atoi(input)
+	if err != nil {
+		return 0, err
+	}
+	return value, nil
+}
+
 func App() {
 	connection, _ := TestConnect()
 
@@ -121,7 +135,16 @@ func App() {
 				fmt.Println("5. Hapus customer")
 				fmt.Println("6. Hapus barang")
 				fmt.Println("7. Hapus nota transaksi")
+				fmt.Println("8. Hapus detail transaksi")
 				fmt.Println("9. Keluar")
+				fmt.Println("10. Tambah barang baru")
+				fmt.Println("11. Edit informasi barang")
+				fmt.Println("12. Update stok barang")
+				fmt.Println("13. Tampilkan daftar barang")
+				fmt.Println("14. Tambah customer baru")
+				fmt.Println("15. Create nota transaksi untuk customer")
+				fmt.Println("16. Tambah detail transaksi")
+				fmt.Println("17. Tampilkan detail transaksi")
 				fmt.Print("Masukkan input: ")
 				fmt.Scanln(&inputMenu2)
 				if inputMenu2 == 9 {
@@ -193,6 +216,126 @@ func App() {
 						return
 					}
 					fmt.Println("berhasil menghapus nota transaksi")
+				} else if inputMenu2 == 8 {
+					var id uint
+					fmt.Print("Masukkan id detail transaksi ")
+					fmt.Scanln(&id)
+					_, err := dtc.DeleteDetailTransaksi(id)
+					if err != nil {
+						fmt.Println("error ketika menghapus detail transaksi")
+						return
+					}
+					fmt.Println("berhasil menghapus detail transaksi")
+				} else if inputMenu2 == 10 {
+					_, err := bc.AddBarang(data.ID)
+					if err != nil {
+						fmt.Println("error ketika menambahkan barang")
+						return
+					}
+					fmt.Println("berhasil menambahkan barang")
+				} else if inputMenu2 == 11 {
+					var id uint
+					fmt.Print("Masukkan id barang ")
+					fmt.Scanln(&id)
+					_, err := bc.UpdateBarang(id)
+					if err != nil {
+						fmt.Println("error ketika mengubah barang")
+						return
+					}
+					fmt.Println("berhasil mengubah barang")
+				} else if inputMenu2 == 12 {
+					var id uint
+					fmt.Print("Masukkan id barang ")
+					fmt.Scanln(&id)
+					_, err := bc.UpdateBarang(id)
+					if err != nil {
+						fmt.Println("error ketika mengubah barang")
+						return
+					}
+					fmt.Println("berhasil mengubah stok barang")
+				} else if inputMenu2 == 13 {
+					data, err := bc.FindBarang(data.ID)
+					if err != nil {
+						fmt.Println("error ketika menampilkan daftar barang")
+						return
+					}
+					fmt.Println("berhasil menampilkan daftar barang")
+					for i, barang := range data {
+						fmt.Printf("Barang %d:\nId: %d\nKode: %s\nNama: %s\nHarga: %d\n\n", i+1, barang.ID, barang.KodeBarang, barang.NamaBarang, barang.Harga)
+					}
+				} else if inputMenu2 == 14 {
+					_, err := cc.AddCustomer(data.ID)
+					if err != nil {
+						fmt.Println("error ketika menambahkan customer")
+						return
+					}
+					fmt.Println("berhasil menambahkan customer")
+				} else if inputMenu2 == 15 {
+					customerId, err := InputUint("Silahkan pilih id customer ")
+					if err != nil {
+						fmt.Println("error ketika memilih id customer")
+						return
+					}
+					_, err = cc.GetCustomer(customerId)
+					if err != nil {
+						fmt.Println("error ketika memilih id customer")
+						return
+					}
+					_, err = ntc.CreateNotaTransaksi(data.ID, customerId)
+					if err != nil {
+						fmt.Println("error ketika membuat nota transaksi")
+						return
+					}
+					fmt.Println("berhasil membuat nota transaksi")
+				} else if inputMenu2 == 16 {
+					notaTransaksiId, err := InputUint("Silahkan pilih id nota transaksi ")
+					if err != nil {
+						fmt.Println("error ketika memilih id nota transaksi")
+						return
+					}
+					barangId, err := InputUint("Masukkan ID barang")
+					if err != nil {
+						fmt.Println("error ketika memilih id barang")
+						return
+					}
+
+					jumlahBarang, err := InputInt("Masukkan jumlah barang")
+					if err != nil {
+						fmt.Println("error ketika memasukan jumlah barang")
+						return
+					}
+
+					hargaBarang, err := InputInt("Masukkan harga barang")
+					if err != nil {
+						fmt.Println("error ketika memasukan harga barang")
+						return
+					}
+					_, err = dtc.AddDetailTransaksi(notaTransaksiId, barangId, jumlahBarang, hargaBarang)
+					if err != nil {
+						fmt.Println("error ketika menambahkan detail transaksi")
+						return
+					}
+					_, err = bc.CheckBarang(barangId, jumlahBarang)
+					if err != nil {
+						fmt.Println("error ketika mengurangi stok barang")
+						return
+					}
+					fmt.Println("berhasil menambahkan detail transaksi")
+				} else if inputMenu2 == 17 {
+					notaTransaksiId, err := InputUint("Silahkan pilih id nota transaksi ")
+					if err != nil {
+						fmt.Println("error ketika memilih id nota transaksi")
+						return
+					}
+					data, err := dtc.FindDetailTransaksi(notaTransaksiId)
+					if err != nil {
+						fmt.Println("error ketika menampilkan detail transaksi")
+						return
+					}
+					fmt.Println("berhasil menampilkan detail transaksi")
+					for i, detail := range data {
+						fmt.Printf("Detail Transaksi %d:\nId: %d\nNota Transaksi ID: %d\nBarang ID: %d\nJumlah Barang: %d\nHarga Barang: %d\n\n", i+1, detail.ID, detail.NotaTransaksiID, detail.BarangID, detail.JumlahBarang, detail.HargaBarang)
+					}
 				} else {
 					fmt.Println("maaf menu yang anda pilih tidak ada, silahkan pilih lagi")
 					continue
@@ -290,9 +433,31 @@ func App() {
 						fmt.Println("error ketika memilih id nota transaksi")
 						return
 					}
-					_, err = dtc.AddDetailTransaksi(notaTransaksiId)
+					barangId, err := InputUint("Masukkan ID barang")
+					if err != nil {
+						fmt.Println("error ketika memilih id barang")
+						return
+					}
+
+					jumlahBarang, err := InputInt("Masukkan jumlah barang")
+					if err != nil {
+						fmt.Println("error ketika memasukan jumlah barang")
+						return
+					}
+
+					hargaBarang, err := InputInt("Masukkan harga barang")
+					if err != nil {
+						fmt.Println("error ketika memasukan harga barang")
+						return
+					}
+					_, err = dtc.AddDetailTransaksi(notaTransaksiId, barangId, jumlahBarang, hargaBarang)
 					if err != nil {
 						fmt.Println("error ketika menambahkan detail transaksi")
+						return
+					}
+					_, err = bc.CheckBarang(barangId, jumlahBarang)
+					if err != nil {
+						fmt.Println("error ketika mengurangi stok barang")
 						return
 					}
 					fmt.Println("berhasil menambahkan detail transaksi")

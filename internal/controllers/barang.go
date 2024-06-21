@@ -103,29 +103,16 @@ func (bc *BarangController) DeleteBarang(id uint) (bool, error) {
 	return true, nil
 }
 
-func (bc *BarangController) FindBarang(id uint) ([]models.ResponseBarang, error) {
+func (bc *BarangController) FindBarang(id uint) ([]models.Barang, error) {
 	data, err := bc.model.FindBarang(id)
 	if err != nil {
 		return nil, err
 	}
-
-	responseBarang := make([]models.ResponseBarang, len(*data))
-	for i, val := range *data {
-		responseBarang[i] = models.ResponseBarang{
-			ID:         val.ID,
-			KodeBarang: val.KodeBarang,
-			NamaBarang: val.NamaBarang,
-			Stok:       val.Stok,
-			Harga:      val.Harga,
-			Keterangan: val.Keterangan,
-		}
-	}
-
-	return responseBarang, nil
+	return data, nil
 }
 
-func (bc *BarangController) GetBarang(id uint) (bool, error) {
-	_, err := bc.model.GetBarang(id)
+func (bc *BarangController) CheckBarang(id uint, jumlahBarang int) (bool, error) {
+	_, err := bc.model.CheckBarang(id, jumlahBarang)
 	if err != nil {
 		return false, err
 	}

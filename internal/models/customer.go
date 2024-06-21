@@ -8,20 +8,12 @@ import (
 
 type Customer struct {
 	gorm.Model
-	PegawaiId    uint
-	NamaCustomer string
-	Address      string
-	Phone        string
-	Email        string
-  NotaTransaksi []NotaTransaksi `gorm:"foreignKey:CustomerId"`
-}
-
-type ResponseCustomer struct {
-	ID           uint
-	NamaCustomer string
-	Address      string
-	Phone        string
-	Email        string
+	PegawaiId     uint
+	NamaCustomer  string
+	Address       string
+	Phone         string
+	Email         string
+	NotaTransaksi []NotaTransaksi `gorm:"foreignKey:CustomerId"`
 }
 
 type CustomerModel struct {
@@ -71,9 +63,10 @@ func (cm *CustomerModel) DeleteCustomer(id uint) (*Customer, error) {
 	return customer, nil
 }
 
-func (cm *CustomerModel) FindCustomer(pegawaiID uint) (*[]Customer, error) {
-	customers := &[]Customer{}
-	if err := cm.DB.Where("pegawai_id = ?", pegawaiID).Find(customers).Error; err != nil {
+func (cm *CustomerModel) FindCustomer(pegawaiID uint) ([]Customer, error) {
+	var customers []Customer
+	err := cm.DB.Where("pegawai_id = ?", pegawaiID).Find(&customers).Error
+	if err != nil {
 		return nil, err
 	}
 	return customers, nil

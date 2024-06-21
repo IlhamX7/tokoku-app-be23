@@ -15,6 +15,7 @@ type NotaTransaksi struct {
 	TanggalTransaksi time.Time
 	TotalBarang      int
 	Keterangan       string
+	DetailTransaksi  []DetailTransaksi `gorm:"foreignKey:NotaTransaksiID"`
 }
 
 type NotaTransaksiModel struct {

@@ -17,13 +17,6 @@ type Pegawai struct {
 	NotaTransaksi []NotaTransaksi `gorm:"foreignKey:PegawaiId"`
 }
 
-type ResponsePegawai struct {
-	ID       uint   `json:"uint"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-}
-
 type PegawaiModel struct {
 	db *gorm.DB
 }
@@ -75,14 +68,14 @@ func (pm *PegawaiModel) DeletePegawai(id uint) (Pegawai, error) {
 	return pegawai, nil
 }
 
-func (pm *PegawaiModel) FindPegawai(id uint) (*[]Pegawai, error) {
+func (pm *PegawaiModel) FindPegawai(id uint) ([]Pegawai, error) {
 	var pegawai []Pegawai
 	err := pm.db.Where("Admin_Id = ?", id).Find(&pegawai).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return &pegawai, nil
+	return pegawai, nil
 }
 
 func (pm *PegawaiModel) LoginPegawai(username string, password string) (Pegawai, error) {
