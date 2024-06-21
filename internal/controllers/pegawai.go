@@ -55,23 +55,12 @@ func (pc *PegawaiController) DeletePegawai(id uint) (bool, error) {
 	return true, nil
 }
 
-func (pc *PegawaiController) FindPegawai(id uint) ([]models.ResponsePegawai, error) {
+func (pc *PegawaiController) FindPegawai(id uint) ([]models.Pegawai, error) {
 	data, err := pc.model.FindPegawai(id)
 	if err != nil {
 		return nil, err
 	}
-
-	responsePegawai := make([]models.ResponsePegawai, len(*data))
-	for i, val := range *data {
-		responsePegawai[i] = models.ResponsePegawai{
-			ID:       val.ID,
-			Username: val.Username,
-			Password: val.Password,
-			Email:    val.Email,
-		}
-	}
-
-	return responsePegawai, nil
+	return data, nil
 }
 
 func (pc *PegawaiController) LoginPegawai() (models.Pegawai, error) {

@@ -12,14 +12,6 @@ type DetailTransaksi struct {
 	HargaBarang     int
 }
 
-type ResponseDetailTransaksi struct {
-	ID              uint
-	NotaTransaksiID uint
-	BarangID        uint
-	JumlahBarang    int
-	HargaBarang     int
-}
-
 type DetailTransaksiModel struct {
 	db *gorm.DB
 }
@@ -49,9 +41,10 @@ func (dtm *DetailTransaksiModel) DeleteDetailTransaksi(id uint) (*DetailTransaks
 	return detail, nil
 }
 
-func (dtm *DetailTransaksiModel) FindDetailTransaksi(notaTransaksiID uint) (*[]DetailTransaksi, error) {
-	details := &[]DetailTransaksi{}
-	if err := dtm.db.Where("nota_transaksi_id = ?", notaTransaksiID).Find(details).Error; err != nil {
+func (dtm *DetailTransaksiModel) FindDetailTransaksi(notaTransaksiID uint) ([]DetailTransaksi, error) {
+	var details []DetailTransaksi
+	err := dtm.db.Where("nota_transaksi_id = ?", notaTransaksiID).Find(&details).Error
+	if err != nil {
 		return nil, err
 	}
 	return details, nil

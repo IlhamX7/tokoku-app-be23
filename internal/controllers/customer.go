@@ -56,24 +56,12 @@ func (cc *CustomerController) DeleteCustomer(id uint) (bool, error) {
 	return true, nil
 }
 
-func (cc *CustomerController) FindCustomer(id uint) ([]models.ResponseCustomer, error) {
+func (cc *CustomerController) FindCustomer(id uint) ([]models.Customer, error) {
 	data, err := cc.model.FindCustomer(id)
 	if err != nil {
 		return nil, err
 	}
-
-	responseCustomer := make([]models.ResponseCustomer, len(*data))
-	for i, val := range *data {
-		responseCustomer[i] = models.ResponseCustomer{
-			ID:           val.ID,
-			NamaCustomer: val.NamaCustomer,
-			Address:      val.Address,
-			Phone:        val.Phone,
-			Email:        val.Email,
-		}
-	}
-
-	return responseCustomer, nil
+	return data, nil
 }
 
 func (cc *CustomerController) GetCustomer(id uint) (bool, error) {

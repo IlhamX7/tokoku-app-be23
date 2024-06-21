@@ -8,21 +8,13 @@ import (
 
 type Barang struct {
 	gorm.Model
-	PegawaiId  uint
-	KodeBarang string
-	NamaBarang string
-	Stok       int
-	Harga      int
-	Keterangan string
-}
-
-type ResponseBarang struct {
-	ID         uint
-	KodeBarang string
-	NamaBarang string
-	Stok       int
-	Harga      int
-	Keterangan string
+	PegawaiId       uint
+	KodeBarang      string
+	NamaBarang      string
+	Stok            int
+	Harga           int
+	Keterangan      string
+	DetailTransaksi []DetailTransaksi `gorm:"foreignKey:BarangID"`
 }
 
 type BarangModel struct {
@@ -73,17 +65,24 @@ func (bm *BarangModel) DeleteBarang(id uint) (*Barang, error) {
 	return barang, nil
 }
 
-func (bm *BarangModel) FindBarang(pegawaiID uint) (*[]Barang, error) {
-	barangs := &[]Barang{}
-	if err := bm.DB.Where("pegawai_id = ?", pegawaiID).Find(barangs).Error; err != nil {
+func (bm *BarangModel) FindBarang(pegawaiID uint) ([]Barang, error) {
+	var barangs []Barang
+	err := bm.DB.Where("pegawai_id = ?", pegawaiID).Find(&barangs).Error
+	if err != nil {
 		return nil, err
 	}
 	return barangs, nil
 }
 
-func (bm *BarangModel) GetBarang(barangID uint) (*Barang, error) {
+func (bm *BarangModel) CheckBarang(barangID uint, jumlahBarang int) (*Barang, error) {
 	barang := &Barang{}
 	if err := bm.DB.Where("ID = ?", barangID).First(barang).Error; err != nil {
+		return nil, err
+	}
+	barang.Stok = barang.Stok - jumlahBarang
+	barang.UpdatedAt = time.Now()
+
+	if err := bm.DB.Save(barang).Error; err != nil {
 		return nil, err
 	}
 	return barang, nil
