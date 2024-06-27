@@ -42,11 +42,10 @@ dbname= is your db name
 
 ## Install library:
 install several libraries needed for the project, for example:
-
-```bash
-    go get gorm.io/gorm
-    go get gorm.io/driver/postgres
-    go get github.com/joho/godotenv
+```
+go get gorm.io/gorm
+go get gorm.io/driver/postgres
+go get github.com/joho/godotenv
 ```
 
 ## Run the app:
